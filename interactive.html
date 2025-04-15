@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #f0f8ff, #87cefa);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease;
+        }
+        .cell.taken {
+            cursor: not-allowed;
+            background: #dcdcdc;
+        }
+        .cell:hover:not(.taken) {
+            background: #e0f7fa;
+        }
+        .scoreboard {
+            margin-top: 20px;
+            color: #444;
+            font-size: 1.2rem;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background: #007acc;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #005f8d;
+        }
+        .winner-message {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 1.5rem;
+            color: white;
+            background: #28a745;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="scratch.html">Go Home</a>
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+        <div class="grid">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="scoreboard">
+            <p>Player Wins: <span id="player-score">0</span></p>
+            <p>Computer Wins: <span id="computer-score">0</span></p>
+        </div>
+        <button id="reset">Restart Game</button>
+        <div class="winner-message" id="winner-message"></div>
+    </div>
+
+    <script>
+        const grid = document.querySelectorAll('.cell');
+        const playerScoreEl = document.getElementById('player-score');
+        const computerScoreEl = document.getElementById('computer-score');
+        const resetButton = document.getElementById('reset');
+        const winnerMessageEl = document.getElementById('winner-message');
+
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let playerScore = 0;
+        let computerScore = 0;
+        let currentPlayer = 'X';
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const checkWinner = () => {
+            for (let combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            return board.includes('') ? null : 'Tie';
+        };
+
+        const endRound = (winner) => {
+            if (winner === 'X') {
+                playerScore++;
+                playerScoreEl.textContent = playerScore;
+            } else if (winner === 'O') {
+                computerScore++;
+                computerScoreEl.textContent = computerScore;
+            }
+            if (playerScore === 2 || computerScore === 2) {
+                const winnerText = playerScore === 2 ? 'Player' : 'Computer';
+                winnerMessageEl.textContent = `🎉 Congratulations! ${winnerText} wins the game! 🎉`;
+                winnerMessageEl.style.display = 'block';
+                resetButton.textContent = 'Play Again';
+                resetButton.disabled = false;
+            } else {
+                alert(winner === 'Tie' ? 'It\'s a Tie!' : `${winner === 'X' ? 'Player' : 'Computer'} wins this round!`);
+                resetBoard();
+            }
+        };
+
+        const computerMove = () => {
+            let available = board.map((v, i) => (v === '' ? i : null)).filter(v => v !== null);
+            let choice = available[Math.floor(Math.random() * available.length)];
+            board[choice] = 'O';
+            grid[choice].textContent = 'O';
+            grid[choice].classList.add('taken');
+
+            // Check for winner after computer move
+            const winner = checkWinner();
+            if (winner) endRound(winner);
+        };
+
+        const handleClick = (e) => {
+            const index = e.target.dataset.index;
+            if (board[index] !== '' || currentPlayer !== 'X') return;
+
+            // Player Move
+            board[index] = 'X';
+            e.target.textContent = 'X';
+            e.target.classList.add('taken');
+
+            // Check for Winner
+            const winner = checkWinner();
+            if (winner) return endRound(winner);
+
+            // Computer Move
+            currentPlayer = 'O';
+            setTimeout(() => {
+                computerMove();
+                currentPlayer = 'X';
+            }, 500);
+        };
+
+        const resetBoard = () => {
+            board = ['', '', '', '', '', '', '', '', ''];
+            grid.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('taken');
+            });
+            currentPlayer = 'X';
+        };
+
+        const resetGame = () => {
+            playerScore = 0;
+            computerScore = 0;
+            playerScoreEl.textContent = '0';
+            computerScoreEl.textContent = '0';
+            resetBoard();
+            winnerMessageEl.style.display = 'none';
+            resetButton.textContent = 'Restart Game';
+        };
+
+        grid.forEach(cell => cell.addEventListener('click', handleClick));
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,61 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; 
+    background-color: lightblue; 
+    color: darkslategray; 
+    text-align: center; 
+}
+
+/* Header styling */
+.header {
+    background-color: lightblue; 
+    color: midnightblue; 
+    padding: 20px;
+    font-size: 1.8rem;
+}
+
+/* Main content styling */
+.main-content {
+    background-color: tan; 
+    color: darkgreen; 
+    padding: 15px;
+    margin: 20px auto;
+    width: 80%;
+    border-radius: 8px; 
+}
+
+/* Footer styling */
+.footer {
+    background-color: lightgray; 
+    color: black;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+/* Additional styles for images */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px; 
+    margin: 10px 0;
+}
+
+/* List styles */
+ul {
+    text-align: left; 
+    margin: 10px auto;
+    padding-left: 20px;
+    display: inline-block; 
+}
+
+a {
+    color: midnightblue;
+    text-decoration: none;
+    margin: 10px 0;
+    display: inline-block;
+}
